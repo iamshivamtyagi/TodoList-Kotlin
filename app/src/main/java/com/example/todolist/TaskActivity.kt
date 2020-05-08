@@ -23,9 +23,9 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var timeSetListener: TimePickerDialog.OnTimeSetListener
 
-    private val lables = arrayListOf("Personal", "Business", "Insurance", "Shopping", "Banking")
+    private val labels = arrayListOf("Personal", "Business", "Insurance", "Shopping", "Banking")
 
-    val db by lazy { 
+    val db by lazy {
         Room.databaseBuilder(
             this,
             AppDatabase::class.java,
@@ -48,10 +48,10 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter<String>(
             this,
             android.R.layout.simple_spinner_dropdown_item,
-            lables
+            labels
         )
 
-        lables.sort()
+        labels.sort()
 
         spinnerCategory.adapter = adapter
     }
