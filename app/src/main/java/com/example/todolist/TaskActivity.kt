@@ -25,7 +25,7 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
 
     private val lables = arrayListOf("Personal", "Business", "Insurance", "Shopping", "Banking")
 
-    val db by lazy {
+    val db by lazy { 
         Room.databaseBuilder(
             this,
             AppDatabase::class.java,
