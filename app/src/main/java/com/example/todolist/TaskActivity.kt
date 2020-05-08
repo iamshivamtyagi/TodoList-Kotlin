@@ -94,7 +94,7 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
         val myFormat = "h:mm a"
 
         val sdf = SimpleDateFormat(myFormat)
-        dateEdt.setText(sdf.format(myCalendar.time))
+        timeEdt.setText(sdf.format(myCalendar.time))
 
     }
 
