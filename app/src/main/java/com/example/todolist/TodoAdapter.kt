@@ -44,7 +44,7 @@ class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.
         }
 
         private fun updateTime(time: Long) {
-            // 4:20 am
+            // 04:20 AM
             val myFormat = "h:mm a"
 
             val sdf = SimpleDateFormat(myFormat)

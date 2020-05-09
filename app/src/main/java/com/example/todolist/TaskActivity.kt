@@ -23,6 +23,9 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var timeSetListener: TimePickerDialog.OnTimeSetListener
 
+    var finalDate = 0L
+    var finalTime = 0L
+
     private val labels = arrayListOf("Personal", "Business", "Insurance", "Shopping", "Banking")
 
     val db by lazy {
@@ -40,6 +43,8 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
         dateEdt.setOnClickListener(this)
 
         timeEdt.setOnClickListener(this)
+
+        saveBtn.setOnClickListener(this)
 
         setUpSpinner()
     }
@@ -64,7 +69,17 @@ class TaskActivity : AppCompatActivity(), View.OnClickListener {
             R.id.timeEdt -> {
                 setTimeListener()
             }
+            R.id.saveBtn -> {
+                saveData()
+            }
         }
+    }
+
+    private fun saveData() {
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "todo.db"
+        ).build()
     }
 
     private fun setTimeListener() {
