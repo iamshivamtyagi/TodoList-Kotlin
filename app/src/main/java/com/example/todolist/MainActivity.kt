@@ -43,12 +43,15 @@ class MainActivity : AppCompatActivity() {
                 list.clear()
                 list.addAll(it)
                 adapter.notifyDataSetChanged()
+            }else{
+                list.clear()
+                adapter.notifyDataSetChanged()
             }
         })
 
     }
 
-    fun intiSwipe() {
+    private fun intiSwipe() {
         val simpleItemTouchCallback = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
