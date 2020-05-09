@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                 list.clear()
                 list.addAll(it)
                 adapter.notifyDataSetChanged()
-            }else{
+            } else {
                 list.clear()
                 adapter.notifyDataSetChanged()
             }
@@ -158,7 +159,51 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+
+        val item = menu?.findItem(R.id.search)
+        val searchView = item?.actionView as SearchView
+
+        item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                displayTodo()
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                displayTodo()
+                return true
+            }
+
+        })
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (!newText.isNullOrEmpty()) {
+                    displayTodo(newText)
+                }
+                return true
+            }
+
+        })
+
         return super.onCreateOptionsMenu(menu)
+    }
+
+    fun displayTodo(newText: String = "") {
+        db.todoDao().getTask().observe(this, Observer {
+            if (it.isNotEmpty()) {
+                list.clear()
+                list.addAll(
+                    it.filter { todo ->
+                        todo.title.contains(newText, true)
+                    }
+                )
+                adapter.notifyDataSetChanged()
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
