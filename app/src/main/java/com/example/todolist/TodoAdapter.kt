@@ -17,7 +17,7 @@ class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.
         )
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount() = list.size
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.bind(list[position])
@@ -32,36 +32,33 @@ class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.
             with(itemView) {
                 val colors = resources.getIntArray(R.array.random_colors)
                 val randomColor = colors[Random().nextInt(colors.size)]
-
-                viewCardTag.setBackgroundColor(randomColor)
-
-                txtShowTime.text = todoModel.title
-
+                viewColorTag.setBackgroundColor(randomColor)
+                txtShowTitle.text = todoModel.title
                 txtShowTask.text = todoModel.description
-
                 txtShowCategory.text = todoModel.category
-
                 updateTime(todoModel.time)
-
                 updateDate(todoModel.date)
+
             }
         }
 
         private fun updateTime(time: Long) {
-            // 04:20 AM
-            val myFormat = "h:mm a"
-
-            val sdf = SimpleDateFormat(myFormat)
+            //Mon, 5 Jan 2020
+            val myformat = "h:mm a"
+            val sdf = SimpleDateFormat(myformat)
             itemView.txtShowTime.text = sdf.format(Date(time))
+
         }
 
-        private fun updateDate(date: Long) {
-            // FRI, 5 May 2020
-            val myFormat = "EEE, d MMM yyyy"
+        private fun updateDate(time: Long) {
+            //Mon, 5 Jan 2020
+            val myformat = "EEE, d MMM yyyy"
+            val sdf = SimpleDateFormat(myformat)
+            itemView.txtShowDate.text = sdf.format(Date(time))
 
-            val sdf = SimpleDateFormat(myFormat)
-
-            itemView.txtShowDate.text = sdf.format(Date(date))
         }
     }
+
 }
+
+

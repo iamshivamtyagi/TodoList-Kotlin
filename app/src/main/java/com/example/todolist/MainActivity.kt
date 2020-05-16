@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    var list = arrayListOf<TodoModel>()
+    val list = arrayListOf<TodoModel>()
 
     var adapter = TodoAdapter(list)
 
@@ -37,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             adapter = this@MainActivity.adapter
         }
 
-        intiSwipe()
+        initSwipe()
 
         db.todoDao().getTask().observe(this, Observer {
             if (!it.isNullOrEmpty()) {
@@ -52,14 +51,31 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun intiSwipe() {
-        val simpleItemTouchCallback = object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+    fun initSwipe() {
+        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+
+                if (direction == ItemTouchHelper.LEFT) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        db.todoDao().deleteTask(adapter.getItemId(position))
+                    }
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        db.todoDao().finishTask(adapter.getItemId(position))
+                    }
+                }
+            }
 
             override fun onChildDraw(
                 canvas: Canvas,
@@ -80,16 +96,13 @@ class MainActivity : AppCompatActivity() {
                     if (dX > 0) {
 
                         icon =
-                            BitmapFactory.decodeResource(resources, R.drawable.ic_check_black_24dp)
+                            BitmapFactory.decodeResource(resources, R.mipmap.ic_check_white_png)
 
                         paint.color = Color.parseColor("#388E3C")
 
                         canvas.drawRect(
-                            itemView.left.toFloat(),
-                            itemView.top.toFloat(),
-                            itemView.left.toFloat() + dX,
-                            itemView.bottom.toFloat(),
-                            paint
+                            itemView.left.toFloat(), itemView.top.toFloat(),
+                            itemView.left.toFloat() + dX, itemView.bottom.toFloat(), paint
                         )
 
                         canvas.drawBitmap(
@@ -98,18 +111,17 @@ class MainActivity : AppCompatActivity() {
                             itemView.top.toFloat() + (itemView.bottom.toFloat() - itemView.top.toFloat() - icon.height.toFloat()) / 2,
                             paint
                         )
+
+
                     } else {
                         icon =
-                            BitmapFactory.decodeResource(resources, R.drawable.ic_delete_black_24dp)
+                            BitmapFactory.decodeResource(resources, R.mipmap.ic_delete_white_png)
 
                         paint.color = Color.parseColor("#D32F2F")
 
                         canvas.drawRect(
-                            itemView.right.toFloat() + dX,
-                            itemView.top.toFloat(),
-                            itemView.right.toFloat(),
-                            itemView.bottom.toFloat(),
-                            paint
+                            itemView.right.toFloat() + dX, itemView.top.toFloat(),
+                            itemView.right.toFloat(), itemView.bottom.toFloat(), paint
                         )
 
                         canvas.drawBitmap(
@@ -119,10 +131,10 @@ class MainActivity : AppCompatActivity() {
                             paint
                         )
                     }
-
-
                     // this move the view along with the swipe
                     viewHolder.itemView.translationX = dX
+
+
                 } else {
                     super.onChildDraw(
                         canvas,
@@ -136,33 +148,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
 
-                if (direction == ItemTouchHelper.LEFT) {
-                    GlobalScope.launch(Dispatchers.IO) {
-                        db.todoDao().deleteTask(adapter.getItemId(position))
-                    }
-                } else if (direction == ItemTouchHelper.RIGHT) {
-                    GlobalScope.launch(Dispatchers.IO) {
-                        db.todoDao().finishTask(adapter.getItemId(position))
-                    }
-                }
-            }
         }
-
         // Attaching Swipe to Recycler View
         val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
-        itemTouchHelper.attachToRecyclerView((todoRv))
+        itemTouchHelper.attachToRecyclerView(todoRv)
     }
 
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-
-        val item = menu?.findItem(R.id.search)
-        val searchView = item?.actionView as SearchView
-
+        val item = menu.findItem(R.id.search)
+        val searchView = item.actionView as androidx.appcompat.widget.SearchView
         item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
                 displayTodo()
@@ -175,7 +171,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -215,10 +212,8 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    // to launch New Task Activity
+    // to launch new task
     fun openNewTask(view: View) {
-        val i = Intent(this, TaskActivity::class.java)
-        startActivity(i)
+        startActivity(Intent(this, TaskActivity::class.java))
     }
-
 }
