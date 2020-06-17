@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    val list = arrayListOf<TodoModel>()
+    private val list = arrayListOf<TodoModel>()
 
     var adapter = TodoAdapter(list)
 
@@ -51,8 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-    fun initSwipe() {
+    private fun initSwipe() {
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -216,4 +215,5 @@ class MainActivity : AppCompatActivity() {
     fun openNewTask(view: View) {
         startActivity(Intent(this, TaskActivity::class.java))
     }
+
 }
